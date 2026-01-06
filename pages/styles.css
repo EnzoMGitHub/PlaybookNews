@@ -1,0 +1,214 @@
+/* pages/styles.css */
+:root{
+  --nav-height: 64px;
+  --nav-text: #fff;
+  --logo-space: 160px;
+  --breakpoint: 768px;
+
+  --underline-h: 2px;
+  --underline-gap: 10px; /* distance below text */
+  --underline-speed: 180ms;
+}
+
+html, body { 
+    margin: 0; 
+    padding: 0; 
+    color: white;
+    font-family: Arial, sans-serif;
+    background-image: url("/imgs/bg.png");
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-attachment: fixed;
+    background-position: center;
+    background-color: black;
+}
+
+#nav{
+  position: relative;
+  z-index: 1000;
+  height: var(--nav-height);
+  padding: 0 16px;
+  box-sizing: border-box;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  color: var(--nav-text);
+  background: linear-gradient(to bottom, rgba(0,0,0,0.9), rgba(0,0,0,0));
+}
+
+/* Layout */
+#nav .nav-inner{
+  width: 100%;
+  display: flex;
+  align-items: center;
+}
+
+#nav .nav-logo{
+  flex: 0 0 var(--logo-space);
+  display: flex;
+  align-items: center;
+  height: 100%;
+  padding-right: 12px;
+  box-sizing: border-box;
+}
+
+#nav .nav-logo img{
+  max-height: calc(var(--nav-height) - 16px);
+  width: auto;
+}
+
+#nav .nav-right{
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+}
+
+/* Nav list */
+#nav ul{
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  gap: 18px;
+  align-items: center;
+}
+
+#nav .drop-menu{
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+#nav li{
+  position: relative;
+}
+
+#nav a{
+  position: relative;
+  display: inline-block;
+  padding: 8px 10px;
+
+  color: inherit;
+  text-decoration: none;
+  font-weight: 500;
+  outline: none;
+}
+
+/* Underline "drop" hover */
+#nav a::after{
+  content: "";
+  position: absolute;
+  left: 10px;                 /* matches horizontal padding */
+  right: 10px;
+  height: var(--underline-h);
+  bottom: calc(-1 * var(--underline-gap));
+
+  background: currentColor;
+  opacity: 0;
+  transform: translateY(-6px);
+  transition: opacity var(--underline-speed) ease,
+              transform var(--underline-speed) ease;
+}
+
+#nav a:hover::after,
+#nav a:focus-visible::after{
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Drop arrow hover */
+.drop{
+  position: relative;
+  padding-right: 0;
+  display: block;
+}
+
+.drop-btn{
+  position: relative;
+  background: transparent;
+  border: 0;
+  color: inherit;
+  cursor: pointer;
+  padding: 8px 18px 8px 10px;
+  font: inherit;
+}
+
+.drop-btn::after{
+  content: "▼";
+  position: absolute;
+  top: 50%;
+  right: 2px;
+  transform: translate(4px, -40%);
+  opacity: 0;
+  transition: transform 180ms ease, opacity 180ms ease;
+  font-size: 0.9em;
+}
+
+.drop:hover .drop-btn::after,
+.drop:focus-within .drop-btn::after{
+  opacity: 1;
+  transform: translate(10px, -40%);
+}
+
+.drop-menu{
+  position: absolute;
+  right: 0;
+  top: calc(100% + 8px);
+  background: rgba(0,0,0,0.9);
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 0;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  width: 100%;
+  text-align: left;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+  opacity: 0;
+  transform: translateY(-6px);
+  pointer-events: none;
+  transition: opacity 150ms ease, transform 150ms ease;
+}
+
+.drop-menu li{
+  width: 100%;
+}
+
+.drop-menu li a{
+  display: block;
+  width: 100%;
+  padding: 10px 14px;
+  box-sizing: border-box;
+  color: inherit;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+#nav .drop-menu a::after{
+  content: none;
+  display: none;
+}
+
+.drop-menu li a:hover,
+.drop-menu li a:focus-visible{
+  background: rgba(255,255,255,0.08);
+}
+
+.drop.open .drop-menu{
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+/* Hamburger (still hidden on desktop; keep your mobile rules elsewhere) */
+#nav .menu-toggle{
+  display: none;
+  background: transparent;
+  border: 0;
+  color: inherit;
+  font-size: 20px;
+  cursor: pointer;
+  padding: 6px;
+  margin-left: 8px;
+}

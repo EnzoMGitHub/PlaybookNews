@@ -1,0 +1,91 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <link rel="stylesheet" href="/styles.css" />
+    <title>PlaybookNews</title>
+  </head>
+  <body>
+    <!-- Navigation bar -->
+    <div>
+      <nav id="nav">
+        <ul>
+          <li><b>PlaybookNews</b></li>
+          <li><a href="./">Home</a></li>
+          <li><a href="#" class="log" id="change1">Dashboard</a></li>
+          <li><a href="#" class="log" id="change2">News</a></li>
+          <li><a href="#" class="log" id="change3">Teams</a></li>
+          <li><a href="#" class="log">Players</a></li>
+          <li><a href="#" class="log">Schedule</a></li>
+          <li><a href="#" class="log">Stats</a></li>
+          <li class="drop" id="user-dropdown" style="display:none">
+            <button type="button" class="drop-btn log" id="user-btn">
+              <span id="user"></span>
+            </button>
+            <ul class="drop-menu" id="user-menu">
+              <li><a href="#">Settings</a></li>
+              <li><a href="/logout">Logout</a></li>
+            </ul>
+          </li>
+        </ul>
+      </nav>
+    </div>
+    <!-- rest of body -->
+    <div> 
+      <h1>Welcome to PlaybookNews</h1>
+      <p>Your Playbook Your Call, A football news site personalized to your taste, includes scheduling information, player stats, player/team news, relevant articles, matchup odds, and much more</p>
+      <!-- <img src="./imgs/bg.png" alt="Background image" width="600" /> -->
+    </div>
+    <pre id="out"></pre>
+    <script>
+      (async () => {
+        try {
+          const res = await fetch('/api/me', { credentials: 'include' });
+          if (!res.ok) throw new Error('not logged in');
+          const data = await res.json();
+
+          document.getElementById('user').textContent = data?.username || '';
+          const dropEl = document.getElementById('user-dropdown');
+          if (dropEl) dropEl.style.display = 'block';
+
+          if (data.preferences?.team) {
+            const teamRes = await fetch(`/api/team/${encodeURIComponent(data.preferences.team)}`, { credentials: 'include' });
+            if (teamRes.ok) {
+              const team = await teamRes.json();
+              const color = team?.colors?.[0];
+              if (color) {
+                document.getElementById('nav').style.background = `linear-gradient(to bottom, ${color}, rgba(0,0,0,0))`;
+              }
+            }
+          }
+          // Leave the default nav (Dashboard/News/Teams...) when logged in.
+        } catch (err) {
+          // User is not logged in: hide gated nav items and show login/signup links.
+          document.querySelectorAll('.log').forEach(el => el.textContent = '');
+          document.getElementById('change1').textContent = 'Login';
+          document.getElementById('change1').href = '/login';
+          document.getElementById('change2').textContent = 'Sign Up';
+          document.getElementById('change2').href = '/signup';
+          const dropEl = document.getElementById('user-dropdown');
+          if (dropEl) dropEl.style.display = 'none';
+        }
+      })();
+
+      // dropdown toggle
+      const dropToggle = document.getElementById('user-btn');
+      const drop = document.getElementById('user-dropdown');
+      if (dropToggle && drop) {
+        dropToggle.addEventListener('click', (e) => {
+          e.preventDefault();
+          drop.classList.toggle('open');
+        });
+        document.addEventListener('click', (e) => {
+          if (!drop.contains(e.target)) {
+            drop.classList.remove('open');
+          }
+        });
+      }
+    </script>
+  </body>
+</html>
