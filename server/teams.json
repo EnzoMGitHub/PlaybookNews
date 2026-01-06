@@ -1,0 +1,363 @@
+{
+    "Arizona Cardinals": {
+        "city": "Glendale",
+        "stadium": "State Farm Stadium",
+        "conference": "NFC",
+        "division": "West",
+        "colors": [
+            "#97233f",
+            "#000000",
+            "#ffffff"
+        ]
+    },
+    "Atlanta Falcons": {
+        "city": "Atlanta",
+        "stadium": "Mercedes-Benz Stadium",
+        "conference": "NFC",
+        "division": "South",
+        "colors": [
+            "#d50a0a",
+            "#000000",
+            "#ffffff",
+            "#c0c0c0"
+        ]
+    },
+    "Baltimore Ravens": {
+        "city": "Baltimore",
+        "stadium": "M&T Bank Stadium",
+        "conference": "AFC",
+        "division": "North",
+        "colors": [
+            "#4b006e",
+            "#000000",
+            "#d4af37",
+            "#ffffff"
+        ]
+    },
+    "Buffalo Bills": {
+        "city": "Buffalo",
+        "stadium": "Highmark Stadium",
+        "conference": "AFC",
+        "division": "East",
+        "colors": [
+            "#4169e1",
+            "#d50a0a",
+            "#ffffff"
+        ]
+    },
+    "Carolina Panthers": {
+        "city": "Charlotte",
+        "stadium": "Bank of America Stadium",
+        "conference": "NFC",
+        "division": "South",
+        "colors": [
+            "#000000",
+            "#0088ce",
+            "#c0c0c0",
+            "#ffffff"
+        ]
+    },
+    "Chicago Bears": {
+        "city": "Chicago",
+        "stadium": "Soldier Field",
+        "conference": "NFC",
+        "division": "North",
+        "colors": [
+            "#000080",
+            "#ff8f00",
+            "#ffffff"
+        ]
+    },
+    "Cincinnati Bengals": {
+        "city": "Cincinnati",
+        "stadium": "Paycor Stadium",
+        "conference": "AFC",
+        "division": "North",
+        "colors": [
+            "#000000",
+            "#ff8f00",
+            "#ffffff"
+        ]
+    },
+    "Cleveland Browns": {
+        "city": "Cleveland",
+        "stadium": "FirstEnergy Stadium",
+        "conference": "AFC",
+        "division": "North",
+        "colors": [
+            "#4b2b1d",
+            "#ff8f00",
+            "#ffffff"
+        ]
+    },
+    "Dallas Cowboys": {
+        "city": "Arlington",
+        "stadium": "AT&T Stadium",
+        "conference": "NFC",
+        "division": "East",
+        "colors": [
+            "#000080",
+            "#c0c0c0",
+            "#ffffff"
+        ]
+    },
+    "Denver Broncos": {
+        "city": "Denver",
+        "stadium": "Empower Field at Mile High",
+        "conference": "AFC",
+        "division": "West",
+        "colors": [
+            "#ff8f00",
+            "#000080",
+            "#ffffff"
+        ]
+    },
+    "Detroit Lions": {
+        "city": "Detroit",
+        "stadium": "Ford Field",
+        "conference": "NFC",
+        "division": "North",
+        "colors": [
+            "#006db0",
+            "#c0c0c0",
+            "#000000",
+            "#ffffff"
+        ]
+    },
+    "Green Bay Packers": {
+        "city": "Green Bay",
+        "stadium": "Lambeau Field",
+        "conference": "NFC",
+        "division": "North",
+        "colors": [
+            "#006400",
+            "#d4af37",
+            "#ffffff"
+        ]
+    },
+    "Houston Texans": {
+        "city": "Houston",
+        "stadium": "NRG Stadium",
+        "conference": "AFC",
+        "division": "South",
+        "colors": [
+            "#003d7d",
+            "#a71930",
+            "#ffffff"
+        ]
+    },
+    "Indianapolis Colts": {
+        "city": "Indianapolis",
+        "stadium": "Lucas Oil Stadium",
+        "conference": "AFC",
+        "division": "South",
+        "colors": [
+            "#4169e1",
+            "#ffffff"
+        ]
+    },
+    "Jacksonville Jaguars": {
+        "city": "Jacksonville",
+        "stadium": "TIAA Bank Field",
+        "conference": "AFC",
+        "division": "South",
+        "colors": [
+            "#008080",
+            "#000000",
+            "#d4af37",
+            "#ffffff"
+        ]
+    },
+    "Kansas City Chiefs": {
+        "city": "Kansas City",
+        "stadium": "GEHA Field at Arrowhead Stadium",
+        "conference": "AFC",
+        "division": "West",
+        "colors": [
+            "#d50a0a",
+            "#d4af37",
+            "#ffffff"
+        ]
+    },
+    "Las Vegas Raiders": {
+        "city": "Paradise",
+        "stadium": "Allegiant Stadium",
+        "conference": "AFC",
+        "division": "West",
+        "colors": [
+            "#c0c0c0",
+            "#000000"
+        ]
+    },
+    "Los Angeles Chargers": {
+        "city": "Inglewood",
+        "stadium": "SoFi Stadium",
+        "conference": "AFC",
+        "division": "West",
+        "colors": [
+            "#b0e0e6",
+            "#d4af37",
+            "#ffffff",
+            "#000080"
+        ]
+    },
+    "Los Angeles Rams": {
+        "city": "Inglewood",
+        "stadium": "SoFi Stadium",
+        "conference": "NFC",
+        "division": "West",
+        "colors": [
+            "#4169e1",
+            "#ffb612",
+            "#ffffff"
+        ]
+    },
+    "Miami Dolphins": {
+        "city": "Miami Gardens",
+        "stadium": "Hard Rock Stadium",
+        "conference": "AFC",
+        "division": "East",
+        "colors": [
+            "#00ffff",
+            "#ff8f00",
+            "#ffffff"
+        ]
+    },
+    "Minnesota Vikings": {
+        "city": "Minneapolis",
+        "stadium": "U.S. Bank Stadium",
+        "conference": "NFC",
+        "division": "North",
+        "colors": [
+            "#4b006e",
+            "#d4af37",
+            "#ffffff"
+        ]
+    },
+    "New England Patriots": {
+        "city": "Foxborough",
+        "stadium": "Gillette Stadium",
+        "conference": "AFC",
+        "division": "East",
+        "colors": [
+            "#000080",
+            "#d50a0a",
+            "#c0c0c0",
+            "#ffffff"
+        ]
+    },
+    "New Orleans Saints": {
+        "city": "New Orleans",
+        "stadium": "Caesars Superdome",
+        "conference": "NFC",
+        "division": "South",
+        "colors": [
+            "#000000",
+            "#cfb53b",
+            "#ffffff"
+        ]
+    },
+    "New York Giants": {
+        "city": "East Rutherford",
+        "stadium": "MetLife Stadium",
+        "conference": "NFC",
+        "division": "East",
+        "colors": [
+            "#4169e1",
+            "#d50a0a",
+            "#ffffff"
+        ]
+    },
+    "New York Jets": {
+        "city": "East Rutherford",
+        "stadium": "MetLife Stadium",
+        "conference": "AFC",
+        "division": "East",
+        "colors": [
+            "#003f2d",
+            "#ffffff",
+            "#000000"
+        ]
+    },
+    "Philadelphia Eagles": {
+        "city": "Philadelphia",
+        "stadium": "Lincoln Financial Field",
+        "conference": "NFC",
+        "division": "East",
+        "colors": [
+            "#004953",
+            "#c0c0c0",
+            "#000000",
+            "#ffffff"
+        ]
+    },
+    "Pittsburgh Steelers": {
+        "city": "Pittsburgh",
+        "stadium": "Acrisure Stadium",
+        "conference": "AFC",
+        "division": "North",
+        "colors": [
+            "#000000",
+            "#d4af37",
+            "#ffffff"
+        ]
+    },
+    "San Francisco 49ers": {
+        "city": "Santa Clara",
+        "stadium": "Levi's Stadium",
+        "conference": "NFC",
+        "division": "West",
+        "colors": [
+            "#c8102e",
+            "#d4af37",
+            "#ffffff"
+        ]
+    },
+    "Seattle Seahawks": {
+        "city": "Seattle",
+        "stadium": "Lumen Field",
+        "conference": "NFC",
+        "division": "West",
+        "colors": [
+            "#002244",
+            "#69be28",
+            "#a5acaf"
+        ]
+    },
+    "Tampa Bay Buccaneers": {
+        "city": "Tampa",
+        "stadium": "Raymond James Stadium",
+        "conference": "NFC",
+        "division": "South",
+        "colors": [
+            "#d50a0a",
+            "#8f8f8c",
+            "#000000",
+            "#ff8f00",
+            "#ffffff"
+        ]
+    },
+    "Tennessee Titans": {
+        "city": "Nashville",
+        "stadium": "Nissan Stadium",
+        "conference": "AFC",
+        "division": "South",
+        "colors": [
+            "#000080",
+            "#4b92db",
+            "#d50a0a",
+            "#ffffff"
+        ]
+    },
+    "Washington Commanders": {
+        "city": "Landover",
+        "stadium": "FedExField",
+        "conference": "NFC",
+        "division": "East",
+        "colors": [
+            "#5a1414",
+            "#d4af37",
+            "#ffffff"
+        ]
+    }
+}

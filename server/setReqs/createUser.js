@@ -1,0 +1,48 @@
+import bcrypt from 'bcrypt';
+import { getDB } from '../db.js';
+
+const SALT_ROUNDS = 15;
+const USERS_COLLECTION = 'users';
+
+function validate({username, password, email, preferences = {}}) {
+    if (!username || typeof username !== 'string' || username.length < 3) {
+        return 'Username must be at least 3 characters long.';
+    }
+    if (!password || typeof password !== 'string' || password.length < 6) {
+        return 'Password must be at least 6 characters long.';
+    }
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!email || typeof email !== 'string' || !emailRegex.test(email)) {
+        return 'Invalid email address.';
+    }
+    return null;
+}
+
+async function encryptPassword(password) {
+    return bcrypt.hash(password, SALT_ROUNDS);
+}
+
+export async function createUser({username, password, email, preferences = {}}) {
+    let err = validate({username, password, email, preferences});
+    if (err) {
+        throw new Error(err);
+    }
+    const hash = await encryptPassword(password);
+    const user = {
+        username: username.toLowerCase(),
+        password: hash,
+        email: email.toLowerCase(),
+        preferences,
+        createdAt: new Date(),
+    };
+    const db = getDB();
+    try {
+        const result = await db.collection(USERS_COLLECTION).insertOne(user);
+    } catch (e) {
+        if (e?.code === 11000) {
+            throw new Error('Username or email already exists.');
+        }
+        throw new Error('Error creating user: ' + e.message);
+    }
+    return result.insertedId;
+}
