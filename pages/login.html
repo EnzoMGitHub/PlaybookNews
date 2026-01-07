@@ -31,7 +31,7 @@
     </div>
     <!-- rest of body -->
     <div> 
-      <h1>Welcome Back!</h1>
+      <h1 class="text-center">Welcome Back!</h1>
         <div class="container mt-5 loginbox">
         <div class="row justify-content-center">
             <div class="col-md-6">
@@ -56,7 +56,7 @@
     <script>
         document.getElementById('loginForm').addEventListener('submit', async function(e) {
             e.preventDefault();
-            const username = document.getElementById('username').value;
+            const username = (document.getElementById('username').value).toLowerCase();
             const password = document.getElementById('password').value;
 
             const response = await fetch('/api/login', {

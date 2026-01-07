@@ -1,9 +1,11 @@
 import express from "express";
 import cookieParser from "cookie-parser";
 import fs from 'fs/promises';
+import jwt from "jsonwebtoken";
+import { ObjectId } from "mongodb";
 import { connectDB, getDB } from "./db.js";
 import { loginUser } from "./getReqs/loginUser.js";
-import { requireAuth } from "./auth.js";
+import { requireAuth, requireAuthPage, reverseAuthPage, reverseAuth } from "./auth.js";
 import { createUser } from "./setReqs/createUser.js";
 import path from "path";
 import { fileURLToPath } from "url";
@@ -15,7 +17,6 @@ const app = express();
 app.use(express.json());
 app.use(cookieParser());
 
-app.use(express.static(path.join(__dirname, "../pages")));
 
 const isProd = process.env.NODE_ENV === "production";
 
@@ -25,7 +26,7 @@ const isProd = process.env.NODE_ENV === "production";
 // Calls external loginUser function which interacts with mongoDB (most of the heavy lifting)
 // Creates an auth cookie
 // Returns the response object with the user's useful (not sensitive) information
-app.post("/api/login", async (req, res) => {
+app.post("/api/login", reverseAuth, async (req, res) => {
   const result = await loginUser(req.body);
   if (!result.passed) {
     return res.status(401).json({ error: result.message });
@@ -43,7 +44,7 @@ app.post("/api/login", async (req, res) => {
 
 // App Post User Request
 // Brief: Creates a new user and logs in
-app.post("/api/user", async (req,res) => {
+app.post("/api/user", reverseAuth, async (req,res) => {
     try {
         const userId = await createUser(req.body);
         const login = await loginUser({username: req.body.username, password: req.body.password});
@@ -73,9 +74,13 @@ app.post("/api/preferences", requireAuth,  async (req, res) => {
             return res.status(400).json({ error: "Invalid preferences format" });
         }
 
+        if (!req.user?.id) {
+            return res.status(401).json({ error: "not logged in" });
+        }
+
         const db = getDB();
         await db.collection("users").updateOne(
-            { username: req.user.username },
+            { _id: new ObjectId(req.user.id) },
             { $set: { preferences: preferences } }
         );
 
@@ -85,6 +90,55 @@ app.post("/api/preferences", requireAuth,  async (req, res) => {
     }
 });
 
+app.post('/api/updateUsr', requireAuth, async (req,res) => {
+    try {
+        const db = getDB();
+        const { username, preferences } = req.body;
+        if (!req.user?.id) {
+            return res.status(401).json({ error: "not logged in" });
+        }
+        const update = {};
+
+        if (typeof username === "string" && username.trim()) {
+            update.username = username.trim();
+        }
+
+        if (preferences && typeof preferences === "object") {
+            update.preferences = preferences;
+        }
+
+        if (Object.keys(update).length === 0) {
+            return res.status(400).json({ error: "No valid fields to update" });
+        }
+
+        await db.collection("users").updateOne(
+            { _id: new ObjectId(req.user.id) },
+            { $set: update }
+        );
+
+        // Re-issue auth cookie if username changed
+        if (update.username) {
+            const secret = process.env.JWT_SECRET;
+            if (secret) {
+                const token = jwt.sign(
+                    { userId: req.user.id, username: update.username },
+                    secret,
+                    { expiresIn: "1d" }
+                );
+                res.cookie("auth", token, {
+                    httpOnly: true,
+                    secure: isProd,
+                    sameSite: "lax",
+                    maxAge: 24 * 60 * 60 * 1000
+                });
+            }
+        }
+
+        return res.json({ message: "User updated successfully", username: update.username ?? req.user.username, preferences: update.preferences });
+    } catch (err) {
+        return res.status(500).json({ error: "Server error" });
+    }
+});
 
 // Get requests:
 
@@ -125,7 +179,13 @@ app.get("/", (req, res) => {
 
 // App Login Get Request
 // Brief: Serves Login page IFF the user is not logged in
-app.get("/login", (req, res) => {
+app.get("/login", reverseAuthPage, (req, res) => {
+    if (req.cookies?.auth) {
+        return res.redirect("/");
+    }
+    res.sendFile(path.join(__dirname, "../pages/login.html"));
+});
+app.get("/login.html", reverseAuthPage, (req, res) => {
     if (req.cookies?.auth) {
         return res.redirect("/");
     }
@@ -134,7 +194,13 @@ app.get("/login", (req, res) => {
 
 // App Signup Get Request
 // Brief: Serves the signup page IFF the user is not logged in
-app.get("/signup", (req, res) => {
+app.get("/signup", reverseAuthPage, (req, res) => {
+    if (req.cookies?.auth) {
+        return res.redirect("/");
+    }
+    res.sendFile(path.join(__dirname, "../pages/user.html"));
+});
+app.get("/user.html", reverseAuthPage, (req, res) => {
     if (req.cookies?.auth) {
         return res.redirect("/");
     }
@@ -143,7 +209,7 @@ app.get("/signup", (req, res) => {
 
 // App Logout Get Request
 // Clears the Cookie (jwt) and returns cleared user payload
-app.get("/logout", (req, res) => {
+app.get("/logout", requireAuth, (req, res) => {
     res.clearCookie("auth", {
         httpOnly: true,
         secure: isProd,
@@ -151,18 +217,13 @@ app.get("/logout", (req, res) => {
         path: "/",
     });
     req.user = null;
-    return res.json({ ok: true, username: null, preferences: null });
+    return res.redirect("/");
 });
 
 // App Pref Get Request
 // Brief: Serves the team setter only if logged in AND no team is set; otherwise redirect home
-app.get("/pref", async (req,res) => {
+app.get("/pref", requireAuthPage, async (req,res) => {
     try {
-        // If not logged in, redirect
-        if (!req.cookies?.auth) {
-            return res.redirect("/");
-        }
-
         const db = getDB();
         const user = await db.collection("users").findOne(
             { username: req.user?.username },
@@ -178,6 +239,192 @@ app.get("/pref", async (req,res) => {
     } catch (err) {
         return res.redirect("/");
     }
+});
+
+// App Settings Get Request
+// Brief: Serves settings.html IFF the user is logged in
+app.get("/settings", requireAuthPage, async (req, res) => {
+    try {
+        const db = getDB();
+        const user = await db.collection("users").findOne(
+            {username: req.user?.username},
+            {projection: {preferences: 1, username: 1}}
+        );
+
+        if (!user) {
+            return res.redirect("/");
+        }
+
+        return res.sendFile(path.join(__dirname, "../pages/settings.html"));
+    } catch (err) {
+        return res.redirect("/");
+    }
+});
+
+// App Dashboard Get Request
+// Brief: Serves dashboard page IFF user is logged in
+app.get("/dashboard", requireAuthPage, async (req,res) => {
+    try {
+        const db = getDB();
+        const user = await db.collection("users").findOne(
+            {username: req.user?.username},
+            {projection: {preferences: 1, username: 1}}
+        );
+
+        if (!user) {
+            return res.redirect("/");
+        }
+
+        return res.sendFile(path.join(__dirname, "../pages/dash.html"));
+    } catch (err) {
+        return res.redirect("/");
+    }
+});
+
+// App News Get Request
+// Brief: Serves news page IFF user is logged in
+app.get("/news", requireAuthPage, async (req,res) => {
+    try {
+        const db = getDB();
+        const user = await db.collection("users").findOne(
+            {username: req.user?.username},
+            {projection: {preferences: 1, username: 1}}
+        );
+
+        if (!user) {
+            return res.redirect("/");
+        }
+
+        return res.sendFile(path.join(__dirname, "../pages/news.html"));
+    } catch (err) {
+        return res.redirect("/");
+    }
+});
+
+// App Players Get Request
+// Brief: Serves players page IFF user is logged in
+app.get("/players", requireAuthPage, async (req,res) => {
+    try {
+        const db = getDB();
+        const user = await db.collection("users").findOne(
+            {username: req.user?.username},
+            {projection: {preferences: 1, username: 1}}
+        );
+
+        if (!user) {
+            return res.redirect("/");
+        }
+
+        return res.sendFile(path.join(__dirname, "../pages/players.html"));
+    } catch (err) {
+        return res.redirect("/");
+    }
+});
+
+// App Schedule Get Request
+// Brief: Serves schedule page IFF user is logged in
+app.get("/schedule", requireAuthPage, async (req,res) => {
+    try {
+        const db = getDB();
+        const user = await db.collection("users").findOne(
+            {username: req.user?.username},
+            {projection: {preferences: 1, username: 1}}
+        );
+
+        if (!user) {
+            return res.redirect("/");
+        }
+
+        return res.sendFile(path.join(__dirname, "../pages/schedule.html"));
+    } catch (err) {
+        return res.redirect("/");
+    }
+});
+
+// App Stats Get Request
+// Brief: Serves stats page IFF user is logged in
+app.get("/stats", requireAuthPage, async (req,res) => {
+    try {
+        const db = getDB();
+        const user = await db.collection("users").findOne(
+            {username: req.user?.username},
+            {projection: {preferences: 1, username: 1}}
+        );
+
+        if (!user) {
+            return res.redirect("/");
+        }
+
+        return res.sendFile(path.join(__dirname, "../pages/stats.html"));
+    } catch (err) {
+        return res.redirect("/");
+    }
+});
+
+// App Teams Get Request
+// Brief: Serves teams page IFF user is logged in
+app.get("/teams", requireAuthPage, async (req,res) => {
+    try {
+        const db = getDB();
+        const user = await db.collection("users").findOne(
+            {username: req.user?.username},
+            {projection: {preferences: 1, username: 1}}
+        );
+
+        if (!user) {
+            return res.redirect("/");
+        }
+
+        return res.sendFile(path.join(__dirname, "../pages/teams.html"));
+    } catch (err) {
+        return res.redirect("/");
+    }
+});
+
+
+// App dash.html Get Request
+// Brief: rejects request and redirects to /dashboard
+app.get("/dash.html", (req,res) => {
+    return res.redirect("/dashboard");
+})
+
+// App news.html Get Request
+// Brief: rejects request and redirects to /news
+app.get("/news.html", (req, res) => {
+    return res.redirect("/news")
+});
+
+// App players.html Get Request
+// Brief: rejects request and redirects to /players
+app.get("/players.html", (req, res) => {
+    return res.redirect("/players")
+});
+
+// App schedule.html Get Request
+// Brief: rejects request and redirects to /schedule
+app.get("/schedule.html", (req, res) => {
+    return res.redirect("/schedule")
+});
+
+// App stats.html Get Request
+// Brief: rejects request and redirects to /stats
+app.get("/stats.html", (req, res) => {
+    return res.redirect("/stats")
+});
+
+// App teams.html Get Request
+// Brief: rejects request and redirects to /teams
+app.get("/teams.html", (req, res) => {
+    return res.redirect("/teams")
+});
+
+// Protect direct .html hits for restricted pages
+app.get("/settings.html", requireAuthPage, (req, res) => {
+    return res.sendFile(path.join(__dirname, "../pages/settings.html"));
+});
+
+app.get("/pref.html", requireAuthPage, (req, res) => {
+    return res.sendFile(path.join(__dirname, "../pages/pref.html"));
 });
 
 // App Team Get Request
@@ -198,3 +445,6 @@ app.get('/api/team/:id', async (req, res) => {
 console.log("Connecting to database and starting server...");
 await connectDB();
 app.listen(process.env.PORT || 3000);
+
+// static assets (after protected routes)
+app.use(express.static(path.join(__dirname, "../pages")));

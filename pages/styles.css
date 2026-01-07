@@ -21,6 +21,8 @@ html, body {
     background-attachment: fixed;
     background-position: center;
     background-color: black;
+    margin-left: 5px;
+    text-shadow: 5px 5px 4px black;
 }
 
 #nav{
@@ -36,6 +38,7 @@ html, body {
 
   color: var(--nav-text);
   background: linear-gradient(to bottom, rgba(0,0,0,0.9), rgba(0,0,0,0));
+  margin-left: -10px !important;
 }
 
 /* Layout */
@@ -199,6 +202,14 @@ html, body {
   opacity: 1;
   transform: translateY(0);
   pointer-events: auto;
+}
+
+/* Settings panes stacking */
+.option-pane{
+  position: relative;
+  width: 100%;
+  min-height: 100%;
+  overflow: auto;
 }
 
 /* Hamburger (still hidden on desktop; keep your mobile rules elsewhere) */
